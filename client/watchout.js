@@ -57,10 +57,21 @@ var player = d3.select("svg")
   .attr("stroke-width", "4")
   .attr("fill", "purple");
 
-d3.select(".player").on("mousedown", function(){
+// Event listener to have .player follow the mouse coordinates over svg
+d3.select("svg").on("mousemove", function(){
+  d3.event.stopPropagation();
   var coords = d3.mouse(this);
-  console.log(coords);
+  callTransition(coords);
 });
+
+// Function to direct movement of player
+var callTransition = function (coords) {
+  d3.select("svg")
+  .selectAll(".player")
+  .attr("cx", function (d){return coords[0]})
+  .attr("cy", function (d){return coords[1]})
+  setTimeout(this.callTransition.bind(this), 350);
+}
 
 // Generate new asteroid trajectory
 placeAsteroids.transition = function () {
