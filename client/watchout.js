@@ -1,11 +1,14 @@
 // start slingin' some d3 here.
 
 // Scoreboard 
-var scoreboard = d3.select(".scoreboard")
-  .style({"border": "1px solid black", "border-radius": "5px", "float": "right", "clear" :"right", "padding": "10px"})
+d3.select(".scoreboard")
+  .style({"border": "1px solid black", "border-radius": "5px", "float": "right", "clear" :"right", "padding": "10px"});
+var scoreboard = d3.select(".scoreboard");
+
 d3.select("body")
   .selectAll("span")
-  .data([10,20,26])
+  .data([0,0,0])
+  .text(function(d){ return d;})
   .style({"color" : "red"});
 
 // Gameboard
@@ -30,7 +33,7 @@ var placeAsteroids = function(num){
   return output;
 }
 // Initialize asteroids on board
-var asteroids = placeAsteroids(2);
+var asteroids = placeAsteroids(15);
 
 // Append asteroids to the DOM
 var asteroid = d3.select("svg")
@@ -55,23 +58,24 @@ var player = d3.select("svg")
   .attr("r", "20")
   .attr("stroke", "pink")
   .attr("stroke-width", "4")
-  .attr("fill", "purple");
-
-// Event listener to have .player follow the mouse coordinates over svg
-d3.select("svg").on("mousemove", function(){
-  d3.event.stopPropagation();
-  var coords = d3.mouse(this);
-  callTransition(coords);
-});
+  .attr("fill", "purple")
+  .attr("collision", "false");
 
 // Function to direct movement of player
-var callTransition = function (coords) {
+var playerCycle = function (coords) {
+  var svg = d3.select("svg")[0][0];
+  var coords = d3.mouse(svg);
   d3.select("svg")
   .selectAll(".player")
   .attr("cx", function (d){return coords[0]})
-  .attr("cy", function (d){return coords[1]})
-  setTimeout(this.callTransition.bind(this), 350);
+  .attr("cy", function (d){return coords[1]});
+  // distanceFromAsteroids();
+  setTimeout(this.playerCycle.bind(this), 350);
 }
+
+d3.select("svg").on("mousemove", function (){
+  playerCycle();
+});
 
 // Generate new asteroid trajectory
 placeAsteroids.transition = function () {
@@ -81,7 +85,7 @@ placeAsteroids.transition = function () {
 }
 
 // Timeout for sending asteroids to new locations
-placeAsteroids.callTransition = function () {
+placeAsteroids.asteroidCycle = function () {
   d3.select("svg")
   .selectAll(".asteroid")
   .transition()
@@ -89,8 +93,52 @@ placeAsteroids.callTransition = function () {
   .attr("cy", function (d){return placeAsteroids.transition()[1]})
   .duration(1500);
 
-  setTimeout(this.callTransition.bind(this), 1500);
+  setTimeout(this.asteroidCycle.bind(this), 1500);
 }
 
 // Initialize asteroid movement
-placeAsteroids.callTransition();
+placeAsteroids.asteroidCycle();
+
+// Collision instance counter
+var counter = 0;
+
+// Collision event handler
+var distanceFromAsteroids = function(){
+  var asteroidX;
+  var asteroidY;
+  var asteroidR;
+  var asteroids = d3.selectAll('.asteroid')[0];
+  var playerX = d3.select('.player')[0][0].cx.baseVal.value;
+  var playerY = d3.select('.player')[0][0].cy.baseVal.value;
+  var playerR = d3.select('.player')[0][0].r.baseVal.value;
+
+
+
+
+  // Function using pythag to measure distance between player and each asteroid object
+  var distance = function(x1, x2, y1, y2){
+    return Math.sqrt((Math.abs(x2-x1) * Math.abs(x2-x1)) + (Math.abs(y2-y1) * Math.abs(y2-y1)));
+  }
+
+
+  for (var i = 0; i<asteroids.length; i++){ 
+    asteroidX = asteroids[i].cx.baseVal.value;
+    asteroidY = asteroids[i].cy.baseVal.value;
+    asteroidR = asteroids[i].r.baseVal.value;
+
+    if(asteroids[i].collision === true && distance(playerX, asteroidX, playerY,asteroidY) > asteroidR + playerR){
+      counter++;
+      asteroids[i].collision = false;
+    }
+
+    if (distance(playerX, asteroidX, playerY,asteroidY) < asteroidR + playerR) {
+      asteroids[i].collision = true;
+      scoreboard.selectAll('span')
+      .data([0,0, counter])
+      .text(function(d){return d})
+    }
+  }
+}   
+
+//Set the collision detection
+setInterval(distanceFromAsteroids, 50);  
