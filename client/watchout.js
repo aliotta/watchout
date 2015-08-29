@@ -27,7 +27,7 @@ var placePolarBears = function(num){
   for (var i = 0; i < num; i++) {
     xCord = Math.random()*900;
     yCord = Math.random()*900;
-    heightWidth = Math.random()*(30 - 10 +1)+10;
+    heightWidth = Math.random()*(60 - 40 +1)+40;
     output.push({"xCord":xCord, "yCord" : yCord, "heightWidth":heightWidth});
   };
   return output;
@@ -165,7 +165,7 @@ var distanceFromBears = function(){
   }
   // updating the scoreboard
   scoreboard.selectAll('span')
-  .data([highScore,scoreCount, collisionCount])
+  .data([highScore, scoreCount, collisionCount])
   .text(function(d){return d})
 }   
 

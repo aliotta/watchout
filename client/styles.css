@@ -3,3 +3,31 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 
+
+  
+/*@-webkit-keyframes bearDance {
+    0% {-webkit-transform: rotate(0deg)}
+    25% {-webkit-transform: rotate(20deg)}
+    50% {-webkit-transform: rotate(0deg)}
+    75% {-webkit-transform: rotate(-20deg)}
+    100% {-webkit-transform: rotate(00deg)}
+}
+@keyframes bearDance {
+    0% {transform: rotate(0deg)}
+    25% {transform: rotate(20deg)}
+    50% {transform: rotate(0deg)}
+    75% {transform: rotate(-20deg)}
+    100% {transform: rotate(00deg)}
+}
+
+.pbear {
+  position: absolute;
+  -webkit-animation: spin 4s linear infinite;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-name: bearDance;
+  -webkit-animation-iteration-count: infinite;
+  animation-duration: 2s;
+  animation-name: bearDance;
+  animation-iteration-count: infinite;
+  animation: spin 4s linear infinite;
+}*/
