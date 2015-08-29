@@ -10,7 +10,7 @@ d3.select("body")
   .style({"font-size": "26"})
   .style({"background-color": "skyblue"})
   .selectAll("span")
-  .data([200,0,0])
+  .data([0,0,0])
   .text(function(d){ return d;})
   .style({"color": "red"})
   .style({"font-size": "30px"})
@@ -139,18 +139,18 @@ var distanceFromBears = function(){
   }
 
   for (var i = 0; i<polarBears.length; i++){ 
-  // saving polarBear coordinate and size values
+  // saving polarBear coordinate and size values, adjusted for image offsets
     polarBearX = polarBears[i].x.baseVal.value;
     polarBearY = polarBears[i].y.baseVal.value;
     // iterating collision count if player and polarBear have moved apart, adjusting scoreboard
-    
-    if(polarBears[i].collision === true && distance(playerX, polarBearX, playerY,polarBearY) > 70){//playerR){
+    if(polarBears[i].collision === true && distance(playerX, polarBearX, playerY,polarBearY) > polarBears[i].width.animVal.value/2 + 25){
       collisionCount++;
       polarBears[i].collision = false;
       
     }
     // updating collision and score data
-    if (distance(playerX, polarBearX, playerY,polarBearY) < 70) {
+    if (distance(playerX, polarBearX, playerY,polarBearY) < polarBears[i].width.animVal.value/2 + 25) {
+      debugger
       polarBears[i].collision = true;
       scoreCount = 0;
     }
