@@ -1,6 +1,7 @@
 // start slingin' some d3 here.
 
 // Scoreboard 
+
 d3.select(".scoreboard")
   .style({"border": "1px solid black", "border-radius": "5px", "float": "right", "clear" :"right", "padding": "10px"});
 var scoreboard = d3.select(".scoreboard");
@@ -18,9 +19,10 @@ d3.select("body")
 // Gameboard
 var gameboard = d3.select("body")
   .append("svg")
-  .style("width", window.innerWidth-180)
+  .style("width", window.innerWidth - 180)
   .style("height", window.innerHeight - 20)
-  .style("background-color", "lightgray");
+  .style("border", "dashed 1px skyblue")
+  .style("border-radius", "10px");
 
 // Asteroid placement function
 var placePolarBears = function(num){
@@ -30,21 +32,21 @@ var placePolarBears = function(num){
   var heightWidth;
   for (var i = 0; i < num; i++) {
     xCord = Math.random()* window.innerWidth-180;
-    yCord = Math.random()* window.innerHeight-20;
+    yCord = Math.random()* window.innerHeight;
     heightWidth = Math.random()*(100 - 60 +1)+60;
     output.push({"xCord":xCord, "yCord" : yCord, "heightWidth":heightWidth});
   };
   return output;
 }
 // Initialize asteroids on board
-var polarBears = placePolarBears(15);
+var polarBears = placePolarBears(Math.floor(window.innerWidth/75));
 
 // Append asteroids to the DOM
 d3.select("svg")
-  .selectAll("imgage")
+  .selectAll("image")
   .data(polarBears)
   .enter()
-  .append("svg:image")
+  .append("image")
   .classed("pbear", true)
   .attr("x", function (d) {return d.xCord})
   .attr("y", function (d) {return d.yCord})
@@ -53,33 +55,36 @@ d3.select("svg")
   .attr("collision", "false")
   .attr("xlink:href", "PBear.png");
 
-// Add player to the DOM
-var player = d3.select("svg")
-  .append("svg:image")
-  .classed("player", true)
-  .attr("x", "450")
-  .attr("y", "450")
-  .attr("r", "20")
-  .attr("collision", "false")
-  .attr("height", "60")
-  .attr("width", "60")
-  .attr("xlink:href", "penguin.png")
+// Add player to the DOM when the mouse enters the gameboard
+d3.select("svg").on("mouseenter", function() {
+  if (!playerSet)  {
+    var player = d3.select("svg")
+      .append("image")
+      .classed("player", true)
+      .attr("x", "450")
+      .attr("y", "450")
+      .attr("r", "20")
+      .attr("collision", "false")
+      .attr("height", "60")
+      .attr("width", "60")
+      .attr("xlink:href", "penguin.png");
 
-// Function to direct movement of player
-var playerCycle = function (coords) {
+    // Flip the 'player has entered the play field' boolean
+    playerSet = true;
+    // Set the collision detection
+    d3.timer(distanceFromBears, 50);
+  }
+})
+
+//mouse listener to update player location
+d3.select("svg").on("mousemove",function(){
   var svg = d3.select("svg")[0][0];
   var coords = d3.mouse(svg);
-  d3.select("svg")
-  .selectAll(".player")
-  .attr("x", function (d){return coords[0]-30})
-  .attr("y", function (d){return coords[1]-30});
-  // distanceFromAsteroids();
-  setTimeout(this.playerCycle.bind(this), 350);
-}
+  d3.select(".player")
+    .attr("x", function (d){return coords[0]-30})
+    .attr("y", function (d){return coords[1]-30});
+})
 
-d3.select("svg").on("mousemove", function (){
-  playerCycle();
-});
 
 // Generate new asteroid trajectory
 placePolarBears.transition = function () {
@@ -89,25 +94,26 @@ placePolarBears.transition = function () {
 }
 
 // Timeout for sending asteroids to new locations
-placePolarBears.polarBearCycle = function () {
+placePolarBears.polarBearCycle = function (element) {
   d3.select("svg")
   .selectAll(".pbear")
   .transition()
   .attr("x", function (d){return placePolarBears.transition()[0]})
   .attr("y", function (d){return placePolarBears.transition()[1]})
-  .duration(2500);
-
-  setTimeout(this.polarBearCycle.bind(this), 2500);
+  .duration(2500).each("end", function(){
+    placePolarBears.polarBearCycle(d3.select(this))
+  });
 }
 
 // Initialize asteroid movement
-placePolarBears.polarBearCycle();
+placePolarBears.polarBearCycle(polarBears);
 
 // Define counters
 var collisionCount = 0;
 var scoreCount = 0;
 var millisecondCount = 0;
 var highScore = 0;
+var playerSet = false;
 
 // Collision event handler
 var distanceFromBears = function(){
@@ -146,11 +152,21 @@ var distanceFromBears = function(){
     if(polarBears[i].collision === true && distance(playerX, polarBearX, playerY,polarBearY) > polarBears[i].width.animVal.value/2 + 25){
       collisionCount++;
       polarBears[i].collision = false;
+      // remove any previous audio call
+      d3.selectAll("audio")
+        .exit()
+        .remove()
+      // play audio
+      d3.select("body")
+        .append("embed")
+        .attr("src", "bear.wav")
+        .attr("autostart", "true")
+        .attr("hidden", "true")
+        .attr("loop", "false");
       
     }
     // updating collision and score data
     if (distance(playerX, polarBearX, playerY,polarBearY) < polarBears[i].width.animVal.value/2 + 25) {
-      debugger
       polarBears[i].collision = true;
       scoreCount = 0;
     }
@@ -160,6 +176,3 @@ var distanceFromBears = function(){
   .data([highScore, scoreCount, collisionCount])
   .text(function(d){return d})
 }   
-
-// Set the collision detection
-setInterval(distanceFromBears, 50);

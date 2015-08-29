@@ -21,7 +21,6 @@ Feel free to use it if you like. */
 }
 
 .pbear {
-  position: initial;
   -webkit-transform-origin: 50% 50%;
   -webkit-animation: spin 4s linear infinite;
   -webkit-animation-duration: 1.5s;
@@ -31,4 +30,8 @@ Feel free to use it if you like. */
   animation-name: bearDance;
   animation-iteration-count: infinite;
   animation: spin 4s linear infinite;
+}
+
+body {
+  background-image: url("background.png");
 }
