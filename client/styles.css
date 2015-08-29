@@ -5,29 +5,30 @@ Feel free to use it if you like. */
 
 
   
-/*@-webkit-keyframes bearDance {
+@-webkit-keyframes bearDance {
     0% {-webkit-transform: rotate(0deg)}
-    25% {-webkit-transform: rotate(20deg)}
-    50% {-webkit-transform: rotate(0deg)}
+    25% {-webkit-transform: rotate(-20deg)}
+    50% {-webkit-transform: rotate(-40deg)}
     75% {-webkit-transform: rotate(-20deg)}
-    100% {-webkit-transform: rotate(00deg)}
+    100% {-webkit-transform: rotate(0deg)}
 }
 @keyframes bearDance {
     0% {transform: rotate(0deg)}
-    25% {transform: rotate(20deg)}
-    50% {transform: rotate(0deg)}
+    25% {transform: rotate(-20deg)}
+    50% {transform: rotate(-40deg)}
     75% {transform: rotate(-20deg)}
     100% {transform: rotate(00deg)}
 }
 
 .pbear {
-  position: absolute;
+  position: initial;
+  -webkit-transform-origin: 50% 50%;
   -webkit-animation: spin 4s linear infinite;
-  -webkit-animation-duration: 2s;
+  -webkit-animation-duration: 1.5s;
   -webkit-animation-name: bearDance;
   -webkit-animation-iteration-count: infinite;
-  animation-duration: 2s;
+  animation-duration: 1s;
   animation-name: bearDance;
   animation-iteration-count: infinite;
   animation: spin 4s linear infinite;
-}*/
+}

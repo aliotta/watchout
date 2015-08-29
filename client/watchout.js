@@ -6,16 +6,20 @@ d3.select(".scoreboard")
 var scoreboard = d3.select(".scoreboard");
 
 d3.select("body")
+  .selectAll("div")
+  .style({"font-size": "26"})
+  .style({"background-color": "skyblue"})
   .selectAll("span")
-  .data([0,0,0])
+  .data([200,0,0])
   .text(function(d){ return d;})
-  .style({"color" : "red"});
+  .style({"color": "red"})
+  .style({"font-size": "30px"})
 
 // Gameboard
 var gameboard = d3.select("body")
   .append("svg")
-  .style("width", "900")
-  .style("height", "900")
+  .style("width", window.innerWidth-180)
+  .style("height", window.innerHeight - 20)
   .style("background-color", "lightgray");
 
 // Asteroid placement function
@@ -25,9 +29,9 @@ var placePolarBears = function(num){
   var yCord;
   var heightWidth;
   for (var i = 0; i < num; i++) {
-    xCord = Math.random()*900;
-    yCord = Math.random()*900;
-    heightWidth = Math.random()*(60 - 40 +1)+40;
+    xCord = Math.random()* window.innerWidth-180;
+    yCord = Math.random()* window.innerHeight-20;
+    heightWidth = Math.random()*(100 - 60 +1)+60;
     output.push({"xCord":xCord, "yCord" : yCord, "heightWidth":heightWidth});
   };
   return output;
@@ -60,19 +64,6 @@ var player = d3.select("svg")
   .attr("height", "60")
   .attr("width", "60")
   .attr("xlink:href", "penguin.png")
-  // .attr("background-imgage", "xlink:href", "http://rlv.zcache.com/penguin_face_birthday_party_invitation-r8338e73e5dae4a2abad360fee79f2f49_zk91c_512.jpg?rlvnet=1")
-
-
-
-// var player = d3.select("svg")
-
-
-// <svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-//  <g>
-//   <title>Layer 1</title>
-//   <image xlink:href="http://rlv.zcache.com/penguin_face_birthday_party_invitation-r8338e73e5dae4a2abad360fee79f2f49_zk91c_512.jpg?rlvnet=1" id="svg_1" height="438" width="455" y="29" x="82"/>
-//  </g>
-// </svg>
 
 // Function to direct movement of player
 var playerCycle = function (coords) {
@@ -92,8 +83,8 @@ d3.select("svg").on("mousemove", function (){
 
 // Generate new asteroid trajectory
 placePolarBears.transition = function () {
-  vertMove = Math.random() * 900 + 1;
-  horizMove = Math.random() * 900 + 1;
+  vertMove = Math.random() * window.innerHeight - 20 + 1;
+  horizMove = Math.random() * window.innerWidth-180  + 1;
   return [''+horizMove, ''+vertMove];
 }
 
@@ -104,9 +95,9 @@ placePolarBears.polarBearCycle = function () {
   .transition()
   .attr("x", function (d){return placePolarBears.transition()[0]})
   .attr("y", function (d){return placePolarBears.transition()[1]})
-  .duration(1500);
+  .duration(2500);
 
-  setTimeout(this.polarBearCycle.bind(this), 1500);
+  setTimeout(this.polarBearCycle.bind(this), 2500);
 }
 
 // Initialize asteroid movement
@@ -132,6 +123,7 @@ var distanceFromBears = function(){
   if (millisecondCount > 20) {
     millisecondCount = 0;
     scoreCount++;
+
     // updating high score
     if (scoreCount > highScore) {
       highScore = scoreCount;
@@ -152,13 +144,13 @@ var distanceFromBears = function(){
     polarBearY = polarBears[i].y.baseVal.value;
     // iterating collision count if player and polarBear have moved apart, adjusting scoreboard
     
-    if(polarBears[i].collision === true && distance(playerX, polarBearX, playerY,polarBearY) > 40){//playerR){
+    if(polarBears[i].collision === true && distance(playerX, polarBearX, playerY,polarBearY) > 70){//playerR){
       collisionCount++;
       polarBears[i].collision = false;
       
     }
     // updating collision and score data
-    if (distance(playerX, polarBearX, playerY,polarBearY) < 40) {
+    if (distance(playerX, polarBearX, playerY,polarBearY) < 70) {
       polarBears[i].collision = true;
       scoreCount = 0;
     }
